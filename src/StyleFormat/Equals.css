@@ -1,0 +1,15 @@
+.displayEquals{
+    width: 100%;
+    background: #958a8a;
+    height: 50px;
+    margin-top: 20px;
+    border: 0.25px solid gray;
+}
+
+.displayEquals p{
+    font-size: 28px;
+    float: right;
+    margin: 10px;
+    font-weight: bold;
+    color: white;
+}
