@@ -8,8 +8,8 @@ class App extends Component {
     super();
     this.state = {
       userInputValue: "0",
-      isResult: false,
       number: 0,
+      check: false
     };
   }
 
@@ -18,8 +18,9 @@ class App extends Component {
   };
 
   press = (value) => {
-    const { userInputValue, number } = this.state;
+    const { userInputValue, number, check } = this.state;
     let inputValue = "";
+    let numberCheck = this.isNumeric(value) ? number + 1 : 0;
     if (value === "AC") {
       inputValue = "0";
     } else if (userInputValue === "0") {
@@ -31,12 +32,19 @@ class App extends Component {
           inputValue = "-" + inputValue;
         }
       } else {
-        inputValue = userInputValue + value;
+        inputValue = userInputValue;
+        if(check === false && numberCheck === 0){
+          inputValue = inputValue;
+        }
+        else{
+          inputValue = inputValue + value;
+        }
       }
     }
     this.setState({
       userInputValue: inputValue,
-      number: this.isNumeric(inputValue) ? number + 1 : 0,
+      number: numberCheck,
+      check: this.isNumeric(value) ? true : false
     });
   };
 
@@ -46,7 +54,6 @@ class App extends Component {
     let inputValue2 = inputValue1.replace("÷", "/");
     let inputValue3 = inputValue2.replace("%", "/100");
     this.setState({
-      isResult: true,
       userInputValue: eval(inputValue3),
       number: 0,
     });

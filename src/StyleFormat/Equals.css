@@ -1,15 +1,15 @@
 .displayEquals{
     width: 100%;
     background: #958a8a;
-    height: 50px;
-    margin-top: 20px;
+    height: 10%;
     border: 0.25px solid gray;
 }
 
 .displayEquals p{
-    font-size: 28px;
-    float: right;
-    margin: 10px;
+    font-size: 42px;
+    position: absolute;
+    right: 1.25%;
+    top: 2.6%;
     font-weight: bold;
     color: white;
 }
