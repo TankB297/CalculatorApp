@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, memo } from "react";
 import "../StyleFormat/Equals.css";
 
 class Equals extends Component {
@@ -11,4 +11,4 @@ class Equals extends Component {
     );
   }
 }
-export default Equals;
+export default memo(Equals);

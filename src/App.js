@@ -1,26 +1,39 @@
 import "./App.css";
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import Equals from "./Components/Equals";
 import ButtonF from "./Components/Button";
+import Login from "./Components/Login";
+import Register from "./Components/Register";
+import Reset from "./Components/Reset";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth, db } from "./firebase";
+import { BrowserRouter, Routes, Route, Link, Switch } from "react-router-dom";
+import {
+  query,
+  collection,
+  getDocs,
+  where
+} from "firebase/firestore";
+import LatestResult from "./Components/LatestResult";
 
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      userInputValue: "0",
-      number: 0,
-      check: false
-    };
-  }
+function App() {
+  const [userInputValue, setUserInputValue] = useState("0");
+  const [number, setNumber] = useState(0);
+  const [check, setCheck] = useState(false);
+  const [latestResult, setLatestResult] = useState([0]);
+  const [user, loading, error] = useAuthState(auth);
 
-  isNumeric = (num) => {
+  useEffect(() => {
+    loadData();
+  }, [user]);
+
+  const isNumeric = (num) => {
     return !isNaN(num);
   };
 
-  press = (value) => {
-    const { userInputValue, number, check } = this.state;
+  const press = (value) => {
     let inputValue = "";
-    let numberCheck = this.isNumeric(value) ? number + 1 : 0;
+    let numberCheck = isNumeric(value) ? number + 1 : 0;
     if (value === "AC") {
       inputValue = "0";
     } else if (userInputValue === "0") {
@@ -33,39 +46,90 @@ class App extends Component {
         }
       } else {
         inputValue = userInputValue;
-        if(check === false && numberCheck === 0){
+        if (check === false && numberCheck === 0) {
           inputValue = inputValue;
-        }
-        else{
+        } else {
           inputValue = inputValue + value;
         }
       }
     }
-    this.setState({
-      userInputValue: inputValue,
-      number: numberCheck,
-      check: this.isNumeric(value) ? true : false
-    });
+    setUserInputValue(inputValue);
+    setNumber(numberCheck);
+    setCheck(isNumeric(value) ? true : false);
   };
 
-  calculate = () => {
-    const { userInputValue } = this.state;
+  const calculate = async () => {
     let inputValue1 = userInputValue.replace("x", "*");
     let inputValue2 = inputValue1.replace("÷", "/");
     let inputValue3 = inputValue2.replace("%", "/100");
-    this.setState({
-      userInputValue: eval(inputValue3),
-      number: 0,
-    });
+    setUserInputValue(eval(inputValue3));
+    let resultValue = eval(inputValue3);
+    setNumber(0);
+
+    try {
+      const q = await query(
+        collection(db, "users"),
+        where("uid", "==", user?.uid)
+      );
+      const docx = await getDocs(q);
+      const data = docx.docs[0];
+      const _data = data.data().result;
+      _data.unshift(resultValue);
+      db.collection("users").doc(data.id).update({ result: _data });
+    } catch (err) {
+      console.error(err);
+      alert("An error occured while saving user data!");
+    }
+    loadData();
   };
 
-  render() {
-    return (
-      <div className="mainComponent">
-        <Equals userInput={this.state.userInputValue} />
-        <ButtonF press={this.press} calculate={this.calculate} />
-      </div>
+  const loadData = async () => {
+    const q = await query(
+      collection(db, "users"),
+      where("uid", "==", user?.uid)
     );
-  }
+    const docx = await getDocs(q);
+    const data = docx.docs[0];
+    const _data = data.data().result;
+    const arr = [];
+    var dataLength = _data.length; //1 10
+    if(dataLength < 1){
+      setLatestResult(0);
+    }
+    else if(dataLength == 1){
+      arr.push(_data[0]);
+    }
+    else if(dataLength > 1 && dataLength < 10){
+      for (var i = 0; i < dataLength - 1; i++) {
+        arr.push(_data[i] + ", ");
+      }
+      arr.push(_data[dataLength - 1]);
+    }
+    else{
+      for (var i = 0; i < 9; i++) {
+        arr.push(_data[i] + ", ");
+      }
+      arr.push(_data[9]);
+    }
+    setLatestResult(arr);
+  };
+
+  return (
+    <Routes>
+      <Route
+        path="/calculator"
+        element={
+          <div className="mainComponent">
+            <LatestResult latestResult={latestResult} />
+            <Equals userInput={userInputValue} />
+            <ButtonF press={press} calculate={calculate} />
+          </div>
+        }
+      />
+      <Route path="/" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/reset" element={<Reset />} />
+    </Routes>
+  );
 }
 export default App;

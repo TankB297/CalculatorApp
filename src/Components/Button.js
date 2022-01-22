@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, memo } from "react";
 import "../StyleFormat/Button.css";
 
 class ButtonF extends Component{
@@ -42,4 +42,4 @@ class ButtonF extends Component{
         );
     }
 }
-export default ButtonF;
+export default memo(ButtonF);

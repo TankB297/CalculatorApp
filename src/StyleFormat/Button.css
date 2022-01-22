@@ -1,7 +1,7 @@
 .inputButton{
     width: 100%;
     border: 0.25px solid gray;
-    height: 90%;
+    height: 80%;
 }
 .inputButton-row{
     display: flex;
