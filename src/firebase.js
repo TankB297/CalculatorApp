@@ -42,7 +42,7 @@ const registerWithEmailAndPassword = async (
   try {
     const res = await auth.createUserWithEmailAndPassword(email, password);
     await res.user.sendEmailVerification({
-      url: "https://calculator-app-update.herokuapp.com/",
+      url: "http://localhost:3000",
     });
     const user = res.user;
     await db.collection("users").add({
