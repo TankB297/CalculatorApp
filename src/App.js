@@ -5,15 +5,19 @@ import ButtonF from "./Components/Button";
 import Login from "./Components/Login";
 import Register from "./Components/Register";
 import Reset from "./Components/Reset";
+import Waiting from "./Components/Waiting";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "./firebase";
-import { BrowserRouter, Routes, Route, Link, Switch } from "react-router-dom";
 import {
-  query,
-  collection,
-  getDocs,
-  where
-} from "firebase/firestore";
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  Switch,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
+import { query, collection, getDocs, where } from "firebase/firestore";
 import LatestResult from "./Components/LatestResult";
 
 function App() {
@@ -22,9 +26,22 @@ function App() {
   const [check, setCheck] = useState(false);
   const [latestResult, setLatestResult] = useState([0]);
   const [user, loading, error] = useAuthState(auth);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     loadData();
+  }, [user]);
+
+  useEffect(() => {
+    if (!user && location.pathname === "/calculator") {
+      alert("You need to login!");
+      navigate("/");
+    }
+    else if (user && !user.emailVerified) {
+      alert("You need to verify your email!");
+      navigate("/");
+    }
   }, [user]);
 
   const isNumeric = (num) => {
@@ -76,11 +93,30 @@ function App() {
       const _data = data.data().result;
       _data.unshift(resultValue);
       db.collection("users").doc(data.id).update({ result: _data });
+      //Update:
+      const arr = [];
+      var dataLength = _data.length; //1 10
+      if (dataLength < 1) {
+        setLatestResult(0);
+      } else if (dataLength == 1) {
+        arr.push(_data[0]);
+      } else if (dataLength > 1 && dataLength < 10) {
+        for (var i = 0; i < dataLength - 1; i++) {
+          arr.push(_data[i] + ", ");
+        }
+        arr.push(_data[dataLength - 1]);
+      } else {
+        for (var i = 0; i < 9; i++) {
+          arr.push(_data[i] + ", ");
+        }
+        arr.push(_data[9]);
+      }
+      setLatestResult(arr);
     } catch (err) {
       console.error(err);
       alert("An error occured while saving user data!");
     }
-    loadData();
+    //loadData();
   };
 
   const loadData = async () => {
@@ -93,19 +129,16 @@ function App() {
     const _data = data.data().result;
     const arr = [];
     var dataLength = _data.length; //1 10
-    if(dataLength < 1){
+    if (dataLength < 1) {
       setLatestResult(0);
-    }
-    else if(dataLength == 1){
+    } else if (dataLength == 1) {
       arr.push(_data[0]);
-    }
-    else if(dataLength > 1 && dataLength < 10){
+    } else if (dataLength > 1 && dataLength < 10) {
       for (var i = 0; i < dataLength - 1; i++) {
         arr.push(_data[i] + ", ");
       }
       arr.push(_data[dataLength - 1]);
-    }
-    else{
+    } else {
       for (var i = 0; i < 9; i++) {
         arr.push(_data[i] + ", ");
       }
@@ -129,6 +162,7 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/reset" element={<Reset />} />
+      <Route path="/waiting" element={<Waiting />} />
     </Routes>
   );
 }

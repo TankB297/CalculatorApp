@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from "react";
 import "../StyleFormat/Login.css";
-import { signInWithEmailAndPassword, signInWithGoogle } from "../firebase";
+import { signInWithEmailAndPassword } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Loading from "./Loading";
@@ -23,11 +23,6 @@ function Login() {
       }
     }
   }, [isSucceed, loading]);
-
-  const onClickLoginWithGoogle = () => {
-    signInWithGoogle(setLoading, setIsSucceed);
-    setLoading(true);
-  };
 
   return (
     <div className="login-page">
@@ -58,15 +53,7 @@ function Login() {
           <Link to={isSucceed ? "/calculator" : "/"}>
             <button onClick={onClickLogin}>Login</button>
           </Link>
-          <Link to={isSucceed ? "/calculator" : "/"}>
-            <button
-              className="login__btn login__google"
-              onClick={onClickLoginWithGoogle}
-            >
-              Login with Google
-            </button>
-          </Link>
-          <div>
+          <div className="link-Forgot">
             <Link to="/reset">
               <a className="link-Forgot-Password">Forgot Password</a>
             </Link>

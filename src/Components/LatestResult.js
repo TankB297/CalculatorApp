@@ -3,6 +3,7 @@ import "../StyleFormat/LatestResult.css";
 import logoutIcon from "../Images/logout.png";
 import logOutIconHover from "../Images/logoutHover.png";
 import { Link } from "react-router-dom";
+import {logout} from "../firebase";
 
 function LatestResult(props) {
   const [icon, setIcon] = useState(logoutIcon);
@@ -19,6 +20,7 @@ function LatestResult(props) {
           src={icon}
           onMouseOver={handleMouseOver}
           onMouseOut={handleMouseOut}
+          onClick={logout}
         />
       </Link>
       <h1>Latest 10 Results</h1>

@@ -1,17 +1,23 @@
-.result-main{
-    width: 100%;
-    text-align: center;
-    height: 10%;
-    padding: 5px;
+.result-main {
+  width: 100%;
+  text-align: center;
+  height: 10%;
+  padding: 5px;
 }
-.result-main h1{
-    font-size: 27px;
+.result-main h1 {
+  font-size: 27px;
 }
-.result-main p{
-    font-size: 20px;
-    font-weight: bold;
+.result-main p {
+  font-size: 20px;
+  font-weight: bold;
 }
-.result-main img{
-    width: 4%;
+.result-main img {
+  width: 4%;
+  float: left;
+}
+@media only screen and (max-width: 800px) {
+  .result-main img {
+    width: 11%;
     float: left;
+  }
 }

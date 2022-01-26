@@ -1,26 +1,24 @@
 import React, { useState, memo } from "react";
 import "../StyleFormat/Login.css";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import {
-  registerWithEmailAndPassword,
-  signInWithGoogle,
-} from "../firebase";
+import { Link, useNavigate } from "react-router-dom";
+import { registerWithEmailAndPassword } from "../firebase";
 import Loading from "./Loading";
 
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const[loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [succeed, setSucceed] = useState(false);
   const navigate = useNavigate();
 
   const register = () => {
     if (!name) alert("Please enter name!");
-    if(!email) alert("Please enter email!");
-    if(!password) alert("Please enter password!");
-    registerWithEmailAndPassword(name, email, password, setLoading);
+    if (!email) alert("Please enter email!");
+    if (!password) alert("Please enter password!");
+    registerWithEmailAndPassword(name, email, password, setLoading, setSucceed);
     setLoading(true);
+    navigate("/waiting");
   };
 
   return (
@@ -58,7 +56,6 @@ function Register() {
             placeholder="Password"
           />
           <button onClick={register}>Register</button>
-          <button className="additionalButton" onClick={signInWithGoogle}>Register with Google</button>
           <p className="message">
             Already registered?
             <Link to="/">

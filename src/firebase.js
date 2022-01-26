@@ -1,16 +1,6 @@
-//import firebase from "firebase";
-//import * as firebase from "firebase/app"
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
-import React, { useState } from "react";
-
-const MyContext = React.createContext(false);
-
-const ChangeStatus = () => {
-  const [status, setStatus] = useState(false);
-  setStatus(true);
-}
 
 const firebaseConfig = {
   apiKey: "AIzaSyB9s_s43ImdaFEQo_hYpsS7zYaVNVmvgGI",
@@ -24,35 +14,13 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const auth = app.auth();
 const db = app.firestore();
-const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-const signInWithGoogle = async (setLoading, setSucceed) => {
-  try {
-    const res = await auth.signInWithPopup(googleProvider);
-    const user = res.user;
-    const query = await db
-      .collection("users")
-      .where("uid", "==", user.uid)
-      .get();
-    if (query.docs.length === 0) {
-      await db.collection("users").add({
-        uid: user.uid,
-        name: user.displayName,
-        authProvider: "google",
-        email: user.email,
-        result: []
-      });
-    }
-    setLoading(false);
-    setSucceed(true);
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-    setLoading(false);
-  }
-};
-
-const signInWithEmailAndPassword = async (email, password, setSucceed, setLoading) => {
+const signInWithEmailAndPassword = async (
+  email,
+  password,
+  setSucceed,
+  setLoading
+) => {
   try {
     await auth.signInWithEmailAndPassword(email, password);
     setSucceed(true);
@@ -64,22 +32,33 @@ const signInWithEmailAndPassword = async (email, password, setSucceed, setLoadin
   }
 };
 
-const registerWithEmailAndPassword = async (name, email, password, setLoading) => {
+const registerWithEmailAndPassword = async (
+  name,
+  email,
+  password,
+  setLoading,
+  setSucceed
+) => {
   try {
     const res = await auth.createUserWithEmailAndPassword(email, password);
+    await res.user.sendEmailVerification({
+      url: "https://calculator-app-update.herokuapp.com/",
+    });
     const user = res.user;
     await db.collection("users").add({
       uid: user.uid,
       name,
       authProvider: "local",
       email,
-      result: []
+      result: [],
     });
+    setSucceed(true);
     setLoading(false);
-    alert("Sign Up Success!");
+    alert("Email has been sent!");
   } catch (err) {
     console.error(err);
     alert(err.message);
+    setSucceed(false);
     setLoading(false);
   }
 };
@@ -98,12 +77,9 @@ const logout = () => {
   auth.signOut();
 };
 
-<MyContext.Provider value={ChangeStatus.status}></MyContext.Provider>;
 export {
-  MyContext,
   auth,
   db,
-  signInWithGoogle,
   signInWithEmailAndPassword,
   registerWithEmailAndPassword,
   sendPasswordResetEmail,
