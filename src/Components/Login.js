@@ -16,6 +16,7 @@ function Login() {
     signInWithEmailAndPassword(email, password, setIsSucceed, setLoading);
     setLoading(true);
   };
+
   useEffect(() => {
     if (loading) {
       if (isSucceed) {

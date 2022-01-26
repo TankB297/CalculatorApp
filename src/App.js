@@ -38,10 +38,6 @@ function App() {
       alert("You need to login!");
       navigate("/");
     }
-    else if (user && !user.emailVerified) {
-      alert("You need to verify your email!");
-      navigate("/");
-    }
   }, [user]);
 
   const isNumeric = (num) => {
